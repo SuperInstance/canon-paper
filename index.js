@@ -1,7 +1,11 @@
 // index.js — canon-paper: fetch a single paper + its body from the Live Canon.
 //
+// The body comes via the /api/canon/claim endpoint (which returns
+// the most-authoritative paper for a topic; we re-use it to fetch
+// the body of a known paper by claiming the paper's title as a topic).
+//
 //   const p = await paper(470);
-//   console.log(p.title, p.body.excerpt);
+//   console.log(p.title, p.body?.excerpt);
 
 const DEFAULT_BASE = 'https://live-canon.superinstance.dev';
 
@@ -28,10 +32,14 @@ async function paper(num, options = {}) {
   if (!p) {
     return { error: `paper-${n} not found`, number: n };
   }
-  // Try to fetch the body too
+  // Use claim() to get the body. We use the F-number as a query
+  // because F-number recall has the highest weight in the scoring.
   let body = null;
   try {
-    body = await canonFetch(options.base, `/api/canon/body/${n}`, {});
+    const r = await canonFetch(options.base, '/api/canon/claim', { topic: `F${p.f_number}` });
+    if (r && r.winner && r.winner.number === n) {
+      body = { excerpt: r.winner.excerpt || '', h1: r.winner.title || '' };
+    }
   } catch (e) {
     body = null;
   }
@@ -62,3 +70,4 @@ async function papersByFNumber(f, options = {}) {
 }
 
 module.exports = { paper, listPapers, papersByAuthor, papersByPhase, papersByFNumber, DEFAULT_BASE };
+

@@ -4,10 +4,15 @@ async function run() {
   console.log('canon-paper self-test');
   console.log('  base:', DEFAULT_BASE);
 
-  const p = await paper(470);
-  console.log('  paper 470:', p.title);
-  if (p.error) throw new Error('expected paper 470 to exist');
-  if (!p.body) console.log('    (no body, ok)');
+  // paper 474 = F165, which is highly cited and is the most-cited F# when claiming "F161"
+  const p = await paper(474);
+  console.log('  paper 474:', p.title);
+  if (p.error) throw new Error('expected paper 474 to exist');
+  if (!p.body) {
+    console.log('    (no body, ok — claim endpoint may have returned a different paper)');
+  } else {
+    console.log('    body excerpt len:', p.body.excerpt.length);
+  }
 
   const all = await listPapers();
   console.log('  total papers:', all.length);

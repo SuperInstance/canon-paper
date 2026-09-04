@@ -1,6 +1,6 @@
 {
   "name": "@superinstance/canon-paper-gh",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Fetch individual papers and their body excerpts from the Live Canon. https://live-canon.superinstance.dev",
   "main": "index.js",
   "files": [
